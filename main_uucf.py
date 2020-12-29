@@ -1,8 +1,8 @@
 import sys
 import math
 import os
-import xlrd
-# import numpy as np
+import numpy as np
+from sklearn.model_selection import KFold
 
 class Collaborate_Filter:
     def __init__(self):
@@ -79,17 +79,14 @@ class Collaborate_Filter:
             result.append(sorted_neighbors[i])
         return result
 
-    def list_predicts(self, k_nearest_neighbors): #get các item được dự đoán
+    def list_predicts(self, k_nearest_neighbors, user_id): #get các item được dự đoán
         items_predict = {};
         for (item, data) in self.ii_dataset.items():
-            if item not in self.uu_dataset[self.user_id]:
-                items_predict.setdefault(item, self.predict(self.user_id, item, k_nearest_neighbors))
-        items_predict2 = sorted(items_predict.items(), key=lambda items_predict: (items_predict[1], items_predict[0]), reverse=True)
-        if len(items_predict2) > 5:
-            result = items_predict2[0:5];
-        else:
-            result = items_predict2;
-        return result
+            if item not in self.uu_dataset[user_id]:
+                items_predict.setdefault(item, self.predict(user_id, item, k_nearest_neighbors))
+        return user_id, items_predict
+
+
 
     def predict(self, user, item, k_nearest_neighbors): #tính toán các rating còn thiếu
         valid_neighbors = self.check_neighbors_validattion(item, k_nearest_neighbors)
@@ -124,6 +121,7 @@ class Collaborate_Filter:
             if li != 0:
                 row = str(line)
                 row = row.split(" ")
+
                 row.pop()
                 dataset.append(row)
                 uu_dataset.setdefault(row[0], {})
@@ -141,13 +139,26 @@ class Collaborate_Filter:
 
     def main(self):
         self.initialize()
-        k_nearest_neighbors = self.k_nearest_neighbors(self.user_id, self.k)
-        list_predicts = self.list_predicts(k_nearest_neighbors)
-        self.display(list_predicts)
+
+
 
 if __name__ == '__main__':
     cf = Collaborate_Filter()
-    cf.main()
+    cf.initialize()
+
+    list_user_id = np.arange(1, len(cf.uu_dataset) + 1)
+    kfold = KFold(n_splits=5)
+    for train_index, test_index in kfold.split(list_user_id):
+        train_user_id = list_user_id[train_index]
+        test_user_id = list_user_id[test_index]
+        for user_id in train_user_id:
+            k_nearest_neighbors = cf.k_nearest_neighbors(user_id, 10)
+            print(cf.list_predicts(k_nearest_neighbors, user_id))
+
+
+
+
+
 
 
 

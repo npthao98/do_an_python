@@ -1,8 +1,10 @@
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import KFold
 import sys
 import math
 import os
-import xlrd
-# import numpy as np
+import numpy as np
 
 class Collaborate_Filter:
     def __init__(self):
@@ -13,8 +15,10 @@ class Collaborate_Filter:
         self.uu_dataset = None
         self.ii_dataset = None
 
+
     def initialize(self): #gán data
         self.dataset, self.uu_dataset, self.ii_dataset = self.load_data(self.input_file_name)
+
 
     def pearson_correlation(self, user1, user2): #tương quan person
         result = 0.0
@@ -140,20 +144,12 @@ class Collaborate_Filter:
             print(item)
 
     def main(self):
-        self.initialize()
         k_nearest_neighbors = self.k_nearest_neighbors(self.user_id, self.k)
-        list_predicts = self.list_predicts(k_nearest_neighbors)
-        self.display(list_predicts)
+        # list_predicts = self.list_predicts(k_nearest_neighbors)
+        # self.display(list_predicts)
 
-if __name__ == '__main__':
-    cf = Collaborate_Filter()
-    cf.main()
-
-
-
-
-
-
-
+import pandas as pd
+pd.read_csv()
+train.to_csv()
 
 
